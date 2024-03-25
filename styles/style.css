@@ -75,9 +75,11 @@ nav{
 table{
     border: 5px solid blue;
     background-color: bisque;
+    width: 95%;
 }
 
 table tr td{
+    padding: 10px;
     border: 2px solid blue;
 }
 

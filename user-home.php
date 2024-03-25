@@ -1,10 +1,10 @@
 <?php
 session_start(); // Start session to store user data
 
-/* if(isset($_SESSION['email']) && $_SESSION['email'] === 'admin@mail.com') {
+ if(isset($_SESSION['email']) && $_SESSION['email'] === 'admin@mail.com') {
     header("Location: index.php");
     exit();
-} */
+} 
 
 $servername = "localhost";
 $username = "root";
@@ -19,23 +19,6 @@ if ($conn->connect_error) {
 
 $first_name = ""; // Initialize username variable
 
-if (isset($_SESSION['email'])) {
-    $email = $_SESSION['email'];
-    $stmt = $conn->prepare("SELECT firstName FROM user WHERE email = ?");
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    
-    if ($result->num_rows > 0) {
-        $row = $result->fetch_assoc();
-        $first_name = $row['firstName'];
-    } else {
-        echo "No rows returned from the query."; // Debugging message
-    }
-    $stmt->close();
-} else {
-    
-}
 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
