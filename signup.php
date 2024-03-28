@@ -22,18 +22,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($password != $re_password) {
         echo '<script>alert("Passwords do not match");</script>';
     } else {
-        // Insert user data into the user table
-        $sql = "INSERT INTO user (firstName, secondName, email, password) VALUES ('$first_name', '$last_name', '$email', '$password')";
+        try{
+            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+            
+            $stmt = $conn->prepare("INSERT INTO user (firstName, secondName, email, password) VALUES (?,?,?,?)");
+            $stmt->bind_param("ssss", $first_name, $last_name, $email, $hashed_password);
 
-        if ($conn->query($sql) === TRUE) {
-            echo "New record created successfully";
-        } else {
-            if ($conn->errno == 1062) { // Check for duplicate entry error
-                echo '<script>alert("Email already exists. Please use a different email.");</script>';
-            } else {
-                echo "Error: " . $sql . "<br>" . $conn->error;
+            if($stmt->execute() === true){
+                echo "<script>alert('you have sign up successfully')</script>";
+                header("index.php");
+            }else{
+                echo "<script>alert('you have sign up unsuccessfully please try again')</script>";
             }
-        }
+        }catch(mysqli_sql_exception ){
+            echo "<script>alert('you have sign up unsuccessfully please try again')</script>";
+        } 
     }
 }
 
@@ -62,7 +65,6 @@ $conn->close();
         <input type="password" placeholder="Re-write Password" name="re_password" required>
         If you have an account <a href="index.php">login in here</a>
         <input type="submit" value="Sign Up">
-    </form>
     </form>
 </body>
 </html>

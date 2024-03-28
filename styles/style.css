@@ -2,6 +2,7 @@
     margin: 0;
     border: 0;
     padding: 0;
+    
 }
 
 body{
@@ -18,6 +19,11 @@ nav{
     display: flex;
     align-items: center;
     justify-content: space-around;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+h1{
+    font-size: 30px;
 }
 
 .signin{
@@ -29,12 +35,19 @@ nav{
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    box-shadow: 20px 20px 40px black;
 }
 
 .signin input{
     width: 90%;
     height: 40px;
     margin: 20px;
+}
+
+.btn{
+    background-color: blanchedalmond;
+    
 }
 
 .sign_up{
@@ -59,7 +72,7 @@ nav{
     margin-top: 20px;
     background-color: aqua;
     width: 400px;
-    height: 500px;
+    height: auto;
     display: flex;
     flex-direction: column;
     justify-content: center;

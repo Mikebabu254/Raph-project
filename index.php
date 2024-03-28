@@ -1,5 +1,5 @@
 <?php
-session_start(); // Start session to store user data
+session_start();
 
 $servername = "localhost";
 $username = "root";
@@ -12,38 +12,40 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['email']) && isset($_POST['password'])) {
-    $email = $_POST['email'];
-    $password = $_POST['password'];
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $email = $_POST["email"];
+    $password = $_POST["password"];
+    
+    $email = mysqli_real_escape_string($conn, $email);
 
-    // Use prepared statements to prevent SQL injection
-    $stmt = $conn->prepare("SELECT * FROM user WHERE email=? AND password=?");
-    $stmt->bind_param("ss", $email, $password);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    $sql = "SELECT password FROM user WHERE email = '$email'";
+    
+    // Execute the SQL query
+    $result = $conn->query($sql);
 
     if ($result->num_rows == 1) {
         $row = $result->fetch_assoc();
-        $_SESSION['user_id'] = $row['id']; // Store user ID in session
+        $hashed_password = $row['password'];
 
-        // Regenerate session ID to prevent session fixation
-        session_regenerate_id(true);
-
-        // Check if the email is admin's email
-        if ($email !== 'admin@mail.com') {
-            header("Location: user-home.php"); // Redirect admin to admin.php
+        if (password_verify($password, $hashed_password)) {
+            $_SESSION['email'] = $email;
+            
+            if ($email === 'admin@mail.com') {
+                header("location: admin.php");
+            } else {
+                header("location: user-home.php");
+            }
             exit();
         } else {
-            header("Location: admin.php"); // Redirect regular users to home.php
-            exit();
+            echo "<script>alert('Login unsuccessful')</script>";
         }
     } else {
-        echo '<script>alert("Invalid email or password. Please try again.");</script>';
+        echo "<script>alert('Login unsuccessful')</script>";
     }
 }
-
 $conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -55,16 +57,13 @@ $conn->close();
 </head>
 <body>
     <nav>
-        Welcome to freeze flames entertainment
+        <h1>Welcome to freeze flames entertainment</h1>
     </nav>
     <form class="signin" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
         <input type="email" name="email" placeholder="email" required>
         <input type="password" name="password" placeholder="password" required>
-        <?php if(isset($error_message)) { ?>
-            <div><?php echo $error_message; ?></div>
-        <?php } ?>
         <p>If you don't have an account, <a href="signup.php">create an account here</a></p>
-        <input type="submit" value="Login">
+        <input type="submit" value="Login" class="btn">
     </form>
 </body>
 </html>
