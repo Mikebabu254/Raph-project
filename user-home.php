@@ -57,11 +57,19 @@ $conn->close();
 </head>
 <body>
     <nav>
-        <h1><h1>Welcome, <?php echo $first_name; ?> to Freezeflames entertainment</h1>
-        
+        <h1><h1><?php echo $first_name;?>, Welcome to Freezeflames entertainment</h1>
         <a href="logout.php"><button class="logout">Logout</button></a> 
-
     </nav>
+
+    <div class="txt">
+        Welcome to our equipment, event booking website! We're thrilled to have you join us on this exciting journey of discovery and adventure.<br>
+        Whether you're planning a corporate conference, a milestone celebration, or a leisurely getaway, our platform is designed to make your event planning experience seamless and stress-free.<br>
+        With a diverse range of services, and resources at your fingertips, we're here to turn your vision into reality. <br>
+        Let's embark on this unforgettable journey together and create memories that will last a lifetime. <br>Welcome aboard!
+    </div>
+
+    <a href="events.php"><button class="btnOne">you event(s)</button></a>
+
     <form class="book" action="user-home.php" method="post">
         <input type="text" placeholder="Event Type" name="event_type" class="input" required>
         <input type="date" name="date" class="input" required>
@@ -77,4 +85,8 @@ $conn->close();
         <input type="submit" class="input" value="submit">
     </form>
 </body>
+
+<footer>
+    Freezeflames copyright &copy 2024 all reserved
+</footer>
 </html>
