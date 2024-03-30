@@ -1,5 +1,5 @@
 <?php
-session_start(); // Start session to store user data
+session_start();//starting of the session
 
 if (!isset($_SESSION['email']) || empty($_SESSION['email']) || $_SESSION['email'] !== 'admin@mail.com') {
     header("location: index.php");
@@ -12,11 +12,11 @@ $username = "root";
 $password = "";
 $database = "raph";
 
-$conn = new mysqli($servername, $username, $password, $database);
+$conn = new mysqli($servername, $username, $password, $database);//connecting to the database
 
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
-}
+}//checking if connect goes through 
 
 // Fetch user details
 $user_query = "SELECT * FROM user";
@@ -57,6 +57,21 @@ if(isset($_POST['done_booking_id'])) {
         echo "Error moving record: " . $conn->error;
     }
 }
+
+if(isset($_POST['decline_booking'])){
+    $decline_booking = $_POST['decline_booking'];
+    $move_to_decline_query = "INSERT INTO declineevent SELECT * FROM pendingbooking WHERE id = $decline_booking";
+    if($conn->query($move_to_decline_query) === TRUE){
+        $delete_from_pending_query = "DELETE FROM pendingbooking WHERE id = $decline_booking";
+        if ($conn->query($delete_from_pending_query) === TRUE) {
+            // Redirect to avoid re-submitting the form
+        } else {
+            echo "Error deleting record: " . $conn->error;
+        }
+    } else {
+        echo "Error moving record: " . $conn->error;
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -69,7 +84,7 @@ if(isset($_POST['done_booking_id'])) {
 </head>
 <body>
     <nav>
-        <h1>Welcome, <?php echo $first_name; ?> to Freezeflames entertainment</h1>
+        <h1><?php echo $first_name; ?>, Welcome to Freezeflames entertainment</h1>
         <a href="logout.php"><button class="logout">Logout</button></a> 
     </nav>
     <h2>User Details</h2>
@@ -90,7 +105,6 @@ if(isset($_POST['done_booking_id'])) {
                 echo "<td>" . $row["secondName"] . "</td>";
                 echo "<td>" . $row["email"] . "</td>";
                 echo "<td>" . $row["joinTime"] . "</td>";
-                // Add more columns as needed
                 echo "</tr>";
             }
         } else {
@@ -106,10 +120,12 @@ if(isset($_POST['done_booking_id'])) {
             <th>Event Type</th>
             <th>Event Date</th>
             <th>Event Venue</th>
+            <th>Email</th>
             <th>Phone No</th>
             <th>speaker</th>
             <th>Message</th>
             <th>Pending</th> 
+            <th>Decline</th>
         </tr>
         <?php
         if ($pending_booking_result->num_rows > 0) {
@@ -119,10 +135,20 @@ if(isset($_POST['done_booking_id'])) {
                 echo "<td>" . $row["eventType"] . "</td>";
                 echo "<td>" . $row["date"] . "</td>";
                 echo "<td>" . $row["venue"] . "</td>";
+                echo "<td>" .$row["email"] . "</td>";
                 echo "<td>" . $row["phone_no"] . "</td>";
                 echo "<td>" . $row["speaker"] . "</td>";
                 echo "<td>" . $row["message"] . "</td>";
-                echo "<td><form method='post'><input type='hidden' name='done_booking_id' value='" . $row["id"] . "'><button type='submit'>Done</button></form></td>";
+                echo 
+                    "<td><form method='post'>
+                        <input type='hidden' name='done_booking_id' value='" . $row["id"] . "'>
+                        <button type='submit'>Done</button>
+                    </form></td>";
+                echo 
+                    "<td><form method = 'post'>
+                        <input type='hidden' name='decline_booking' value='" . $row["id"] . "'>
+                        <button type='submit'>Decline</button>
+                    </form></td>";
                 echo "</tr>";
             }
         } else {
@@ -138,6 +164,7 @@ if(isset($_POST['done_booking_id'])) {
             <th>Event Type</th>
             <th>Event Date</th>
             <th>Event Venue</th>
+            <th>Email</th>
             <th>Phone No</th>
             <th>speaker</th>
             <th>Message</th>
@@ -151,6 +178,7 @@ if(isset($_POST['done_booking_id'])) {
                 echo "<td>" . $row["eventType"] . "</td>";
                 echo "<td>" . $row["date"] . "</td>";
                 echo "<td>" . $row["venue"] . "</td>";
+                echo "<td>" . $row["email"] . "</td>";
                 echo "<td>" . $row["phone_no"] . "</td>";
                 echo "<td>" . $row["speaker"] . "</td>";
                 echo "<td>" . $row["message"] . "</td>";
@@ -161,6 +189,42 @@ if(isset($_POST['done_booking_id'])) {
             echo "<tr><td colspan='3'>No bookings found</td></tr>";
         }
         ?>
+    </table>
+
+    <h2>Declined Event</h2>
+    <table border="1">
+    <tr>
+            <th>Booking ID</th>
+            <th>Event Type</th>
+            <th>Event Date</th>
+            <th>Event Venue</th>
+            <th>Email</th>
+            <th>Phone No</th>
+            <th>speaker</th>
+            <th>Message</th>
+            <th>Decline</th> 
+        </tr>
+        <?php
+    $declined_booking_query = "SELECT * FROM declineevent";
+    $declined_booking_result = $conn->query($declined_booking_query);
+    if ($declined_booking_result->num_rows > 0) {
+        while ($row = $declined_booking_result->fetch_assoc()) {
+            echo "<tr>";
+            echo "<td>" . $row["id"] . "</td>";
+            echo "<td>" . $row["eventType"] . "</td>";
+            echo "<td>" . $row["date"] . "</td>";
+            echo "<td>" . $row["venue"] . "</td>";
+            echo "<td>" . $row["email"] . "</td>";
+            echo "<td>" . $row["phone_no"] . "</td>";
+            echo "<td>" . $row["speaker"] . "</td>";
+            echo "<td>" . $row["message"] . "</td>";
+            echo "<td>Decline</td>"; 
+            echo "</tr>";
+        }
+    } else {
+        echo "<tr><td colspan='9'>No bookings found</td></tr>";
+    }
+    ?>
     </table>
 </body>
 </html>

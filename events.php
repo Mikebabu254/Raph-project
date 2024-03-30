@@ -29,13 +29,16 @@ if ($result->num_rows == 1) {
     $first_name = "Admin"; // Default value if first name is not found
 }
 
+
 $sqli = "SELECT * FROM pendingbooking WHERE email ='$email'";
 $results = $conn->query($sqli);
 
 $sqlii = "SELECT * FROM doneevent WHERE email ='$email'";
 $resultss = $conn->query($sqlii);
 
-$conn->close();
+$sqlBook = "SELECT * FROM declineevent WHERE email ='$email'";
+$myResults = $conn->query($sqlBook);
+
 ?>
 
 
@@ -60,10 +63,10 @@ $conn->close();
         <h2>Your pending Booking event(s)</h2>
 
         <tr>
-            <th>Booking ID</th>
+        <th>Booking ID</th>
             <th>Event Type</th>
-            <th>Event Date</th>
             <th>Event Venue</th>
+            <th>Phone Number</th>
             <th>speaker</th>
             <th>Message</th>
         </tr>
@@ -86,13 +89,13 @@ $conn->close();
     </table>
 
     <table>
-        <h2>Your Done Event</h2>
+        <h2>Your Done Event(s)</h2>
 
         <tr>
             <th>Booking ID</th>
             <th>Event Type</th>
-            <th>Event Date</th>
             <th>Event Venue</th>
+            <th>Phone Number</th>
             <th>speaker</th>
             <th>Message</th>
         </tr>
@@ -106,6 +109,35 @@ $conn->close();
                         echo "<td>" . $rows["phone_no"] . "</td>";
                         echo "<td>" . $rows["speaker"] . "</td>";
                         echo "<td>" . $rows["message"] . "</td>";
+                    echo "</tr>";
+                }
+            }else{
+                echo "Non of your booked event has taken place";
+            }
+        ?>
+    </table>
+
+    <table>
+        <h2>Your Decine Event(s)</h2>
+
+        <tr>
+        <th>Booking ID</th>
+            <th>Event Type</th>
+            <th>Event Venue</th>
+            <th>Phone Number</th>
+            <th>speaker</th>
+            <th>Message</th>
+        </tr>
+        <?php
+            if($myResults->num_rows >=1){
+                while ($myRow = $myResults->fetch_assoc()){
+                    echo "<tr>";
+                        echo "<td>" . $myRow["id"] . "</td>";
+                        echo "<td>" . $myRow["eventType"] . "</td>";
+                        echo "<td>" . $myRow["venue"] . "</td>";
+                        echo "<td>" . $myRow["phone_no"] . "</td>";
+                        echo "<td>" . $myRow["speaker"] . "</td>";
+                        echo "<td>" . $myRow["message"] . "</td>";
                     echo "</tr>";
                 }
             }else{
